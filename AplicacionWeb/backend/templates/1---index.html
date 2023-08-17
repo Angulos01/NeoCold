@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Enviar formulario a Flask</title>
+</head>
+<body>
+    <h1>---Formulario de Usuario y Contraseña---</h1>
+    <form id="myForm" action="/database" method="post">
+        <label for="user">Usuario:</label>
+        <input type="text" id="user" name="user" required>
+        <br>
+        <label for="password">Contraseña:</label>
+        <input type="password" id="password" name="password" required>
+        <br>
+        <input type="submit" value="Enviar">
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        const form = document.getElementById('myForm');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const user = document.getElementById('user').value;
+            const password = document.getElementById('password').value;
+
+            // Aquí puedes realizar la validación de los campos si es necesario
+
+            const formData = new FormData();
+            formData.append('user', user);
+            formData.append('password', password);
+
+            fetch('/database', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Aquí puedes procesar la respuesta JSON recibida del servidor
+                console.log(data);
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = JSON.stringify(data, null, 2); // Mostrar los datos en formato JSON en la página
+            })
+            .catch(error => console.error(error));
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+import React, { useState, useEffect } from "react";
+import Navbar from "./components/navbar/Navbar";
+import Temperature from "./components/highchart/Temperature";
+import LuzResistor from "./components/highchart/LuzResistor";
+import Humedad from "./components/highchart/Humedad";
+import Energy from "./components/highchart/Energias";
+import Co2 from "./components/highchart/Co2";
+import LoginModal from "./components/loginModal/loginModal";
+import ApiDataPrinter from "./components/apiDataPrinter/ApiDataPrinter";
+import LocationModal from "./components/highchart/LocationModal"; // Ajusta la ruta de importación según tu estructura de carpetas
+
+export default function App() {
+  const [isModalOpen, setIsModalOpen] = useState(true);
+  const [apiData, setApiData] = useState(null);
+  const [isLocationModalOpen, setIsLocationModalOpen] = useState(false); // Nuevo estado para el modal de ubicación
+
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleApiData = (data) => {
+    // Mostrar los datos de la API en la consola
+    console.log("Datos de la API:", data);
+    setApiData(data);
+  };
+
+  const handleOpenLocationModal = () => {
+    setIsLocationModalOpen(true);
+  };
+
+  // Handler para cerrar el modal de ubicación
+  const handleCloseLocationModal = () => {
+    setIsLocationModalOpen(false);
+  };
+
+  useEffect(() => {
+    // Realizar el fetch en el método GET al cargar el componente
+    fetch("http://172.18.4.110:5000/onelog")
+      .then((response) => response.json())
+      .then((data) => {
+        // Manejar los datos obtenidos de la API
+        console.log("Respuesta de la APIIIIIIII:", data);
+      })
+      .catch((error) => {
+        console.error("Error al obtener los datos de la API:", error);
+      });
+  }, []); // El array vacío como segundo argumento garantiza que useEffect se ejecute solo una vez al montar el componente.
+
+  return (
+    <div className="App">
+      <Navbar />
+      <h1>Mi gráfico Highchart</h1>
+      <LoginModal
+        isOpen={isModalOpen}
+        onRequestClose={handleCloseModal}
+        onApiData={handleApiData}
+      />
+
+      {apiData && Object.keys(apiData.logs).map((key) => (
+        <div key={key}>
+          <div>
+            <h2>{key}</h2>
+            {/* Botón para abrir el modal de ubicación */}
+            <button onClick={handleOpenLocationModal}>Ver ubicación</button>
+            {/* Mostrar el modal de ubicación */}
+            <LocationModal
+              isOpen={isLocationModalOpen}
+              onRequestClose={handleCloseLocationModal}
+              data={apiData.logs[key]}
+            />
+          </div>
+          <div style={{ display: "flex" }}>
+            <div style={{ flex: 1 }}>
+              <Temperature data={apiData.logs[key]} />
+            </div>
+            <div style={{ flex: 1 }}>
+              <Humedad data={apiData.logs[key]} />
+            </div>
+            <div style={{ flex: 1 }}>
+              <LuzResistor data={apiData.logs[key]} />
+            </div>
+            <div style={{ flex: 1 }}>
+              <Co2 data={apiData.logs[key]} />
+            </div>
+            <div style={{ flex: 1 }}>
+              <Energy data={apiData.logs[key]} />
+            </div>
+          </div>
+        </div>
+      ))}
+
+      {/* Mostrar los datos de la API en el componente ApiDataPrinter */}
+      <ApiDataPrinter responseData={apiData} />
+    </div>
+  );
+}

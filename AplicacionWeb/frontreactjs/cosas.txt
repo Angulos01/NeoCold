@@ -1,0 +1,13 @@
+vite or npx create-react-app client --template=typescript /install npx first
+npm install react-router-dom
+npm install -D @types/react-router-dom (alternativa para javascript)
+npm install axios
+
+npm create vite@latest vite_neocold
+->React
+->Javascript
+
+cd vite_neocold
+npm install
+npm install react-router-dom
+npm install axios
